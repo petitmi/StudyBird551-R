@@ -89,6 +89,8 @@ generate_page_content <- function(page_title, year) {
         plot2<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
         plot3<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
         
+        gglpotly(plot1)
+        
          chart_describ=dccMarkdown("
         - The **size** and **color** represents the combination of Artist's popularity and song's quality.
         - The singer in the **upper right** corner has the strongest overall strength.
