@@ -4,6 +4,10 @@ library(dashHtmlComponents)
 library(dashBootstrapComponents)
 library(ggplot2)
 library(plotly)
+library(tidyverse)
+library(dplyr)
+library(RColorBrewer)
+library(wordcloud)
 
 app <- Dash$new(external_stylesheets = dbcThemes$QUARTZ)
 years <- c()
@@ -65,8 +69,16 @@ generate_page_content <- function(page_title, year) {
     start_year <- year[1]
     end_year <- year[2]
     if (page_title=="Artist Analysis"){
+        df <- read.csv('./data/processed/artist_process_data.csv')
+        df <- filter(df,Year<=2022&Year>=2012)
+        df1 <- df[!duplicated(df[,4]),]
+        df1$year <- format(df1$first_year, format="%Y")
+        df2 <- filter(df1,popularity>60)
+        df3 <- df[!duplicated(df[,11]),]
+        a <- wordcloud(words=df1$Artist,freq=df1$count,min.freq=3,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(2, .25))
+        b <- wordcloud(words=df1$Artist,freq=df1$popularity,min.freq=80,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(1.5, .15))
+        df4 <- read.csv("./data/processed/genres.csv")
         
-        df <- data.frame(x = rnorm(100), y = rnorm(100))
         plot1<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
         plot2<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
         plot3<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
