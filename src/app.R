@@ -74,7 +74,7 @@ generate_page_content <- function(page_title, year) {
     end_year <- year[2]
     if (page_title=="Artist Analysis"){
         df <- read.csv('./data/processed/artist_process_data.csv')
-        df <- filter(df,Year<=2022&Year>=2012)
+        df <- filter(df,Year<=end_year&Year>=start_year)
         df1 <- df[!duplicated(df[,4]),]
         df1$year <- format(df1$first_year, format="%Y")
         df2 <- filter(df1,popularity>60)
@@ -82,20 +82,61 @@ generate_page_content <- function(page_title, year) {
         a <- wordcloud(words=df1$Artist,freq=df1$count,min.freq=3,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(2, .25))
         b <- wordcloud(words=df1$Artist,freq=df1$popularity,min.freq=80,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(1.5, .15))
         df4 <- read.csv("./data/processed/genres.csv")
+        df4 <- filter(df4,Artist.number>10)
         
-        plot1<-ggplot(data = df2, aes(x = count, y = popularity,colour=size,size=size)) + 
+        plot1<-ggplot(data = df2, aes(x = count, 
+                                      y = popularity,
+                                      colour=size,size=size)) + 
                     geom_point() + 
                     labs(title="Artist's Song Quality vs Popularity",
                          x="Number of times on top", 
                          y = "Artits popularity")+
                     theme(plot.title = element_text(hjust = 0.5))
         
-        plot2<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
-        plot3<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
+        p1<-ggplot(data = df1, aes(x = first_year)) +
+                    geom_histogram(binwidth=.5, 
+                                   colour="black", 
+                                   fill="black") +
+                    labs(title="Debut year distribution",
+                         x="Debut year", 
+                         y = "Artits number")+
+                    theme(plot.title = element_text(hjust = 0.5))
+        
+        p2<-ggplot(data = df1, aes(x = "",
+                                      y=range_count,
+                                      fill=year_range)) +
+                    geom_bar(width=1, 
+                             stat='identity')+
+                    coord_polar(theta = "y")+
+                    labs(title="Debut year percentage")+
+                    theme(plot.title = element_text(hjust = 0.5))
+        
+        plot2<-subplot(p1, p2, nrows = 1)
+        
+        plot3<-ggplot(data = df4, aes(x = Artist.number,
+                                      y=reorder(genres,Artist.number),
+                                      colour=Artist.number)) +
+                    geom_bar(width=0.7,stat='identity')+
+                    labs(title="genres distribution",
+                         x="Artist number",
+                         y="genres")+
+                    theme(plot.title = element_text(hjust = 0.5))
         
         gglpotly(plot1)
         
-         chart_describ=dccMarkdown("
+        saveWidget(a, "tmp.html", selfcontained = F)
+        webshot("tmp.html", "wordcloud1.png", delay = 3, vwidth = 900, vheight = 200)
+        img1 <- readBin("wordcloud1.png", "raw", file.info("wordcloud1.png")$size)
+        img1_base64 <- base64encode(img1)
+        md_code1 <- paste0("![](data:image/png;base64,", img1_base64, ")")
+        
+        saveWidget(b, "tmp.html", selfcontained = F)
+        webshot("tmp.html", "wordcloud2.png", delay = 3, vwidth = 900, vheight = 200)
+        img2 <- readBin("wordcloud2.png", "raw", file.info("wordcloud2.png")$size)
+        img2_base64 <- base64encode(img2)
+        md_code2 <- paste0("![](data:image/png;base64,", img2_base64, ")")
+        
+        chart_describ=dccMarkdown("
         - The **size** and **color** represents the combination of Artist's popularity and song's quality.
         - The singer in the **upper right** corner has the strongest overall strength.
         - We filtered out singers whose popularity was less than **60**.
