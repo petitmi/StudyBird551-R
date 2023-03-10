@@ -149,8 +149,8 @@ generate_page_content <- function(page_title, year) {
         
         
         
-        plot2<-ggplot(df_bin10, aes(x=factor(Year), y=Word_Count, fill=rank_bin10)) +
-          geom_bar(stat="identity", position="stack") +facet_grid(~rank_bin10)+
+        plot2<-ggplot(df_bin, aes(x=factor(Year), y=Word_Count, fill=rank_bin)) +
+          geom_bar(stat="identity", position="stack") +facet_grid(~rank_bin)+
           scale_x_discrete(name="Year") +
           scale_y_continuous(name="Lyrics Length") +
           ggtitle(sprintf("Lyrics Length Anaylisis")) +
