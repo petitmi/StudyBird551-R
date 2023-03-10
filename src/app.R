@@ -124,28 +124,32 @@ generate_page_content <- function(page_title, year) {
         
         gglpotly(plot1)
         
-        saveWidget(a, "tmp.html", selfcontained = F)
-        webshot("tmp.html", "wordcloud1.png", delay = 3, vwidth = 900, vheight = 200)
+        saveWidget(a, "tmp1.html", selfcontained = F)
+        webshot("tmp1.html", "wordcloud1.png", delay = 3, vwidth = 900, vheight = 200)
         img1 <- readBin("wordcloud1.png", "raw", file.info("wordcloud1.png")$size)
         img1_base64 <- base64encode(img1)
         md_code1 <- paste0("![](data:image/png;base64,", img1_base64, ")")
         
-        saveWidget(b, "tmp.html", selfcontained = F)
-        webshot("tmp.html", "wordcloud2.png", delay = 3, vwidth = 900, vheight = 200)
+        saveWidget(b, "tmp2.html", selfcontained = F)
+        webshot("tmp2.html", "wordcloud2.png", delay = 3, vwidth = 900, vheight = 200)
         img2 <- readBin("wordcloud2.png", "raw", file.info("wordcloud2.png")$size)
         img2_base64 <- base64encode(img2)
         md_code2 <- paste0("![](data:image/png;base64,", img2_base64, ")")
         
-        chart_describ=dccMarkdown("
-        - The **size** and **color** represents the combination of Artist's popularity and song's quality.
-        - The singer in the **upper right** corner has the strongest overall strength.
-        - We filtered out singers whose popularity was less than **60**.
-        ")
+        chart_describ=dccMarkdown(list("- The **size** and **color** represents the combination of Artist's popularity and song's quality.",
+                                       "- The singer in the **upper right** corner has the strongest overall strength.",
+                                       "- We filtered out singers whose popularity was less than **60**.",
+                                       md_code1,
+                                       "- Artists with the highest popularity.",
+                                       md_code2,
+                                       "- Artists with the highest number of songs on the Top 100."))
+        
         chart1_describ=dccMarkdown("
         - The chart on the **left** represents the **distribution of singers by year of debut**.
         - The chart on the **right** represents the **percentage of the year of debut of the top artists**.
         - The **range** of debut years is every **10** years.
         ")
+        
         chart2_describ=dccMarkdown("
         - Represented **the type of singer** with the **highest** number of top. 
         ")
