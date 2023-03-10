@@ -113,7 +113,7 @@ generate_page_content <- function(page_title, year) {
     } else if (page_title=="Lyrics Analysis"){
         
         options(dplyr.summarise.inform = FALSE)
-        df <- read_excel('./data/processed/lyrics_dataset.xlsx')
+        df <- read_excel('../data/processed/lyrics_dataset.xlsx')
         df <- df %>% filter(Year >= start_year & Year <= end_year)
         cutRank4<-cut(df$Rank, breaks = 4,labels=c('1-25','26-50','51-75','76-100'))
         df$rank_bin <-cutRank4
@@ -169,7 +169,8 @@ generate_page_content <- function(page_title, year) {
             geom_boxplot()+
             scale_x_discrete(name="Year") +
             scale_y_continuous(name="Sentiment Score")+
-            ggtitle(paste('Boxplot of Sentiment Score Analysis'))
+            ggtitle(paste('Boxplot of Sentiment Score Analysis'))+
+            theme(plot.title = element_text(hjust = 1))  
 
         plot3<-subplot(p1, p2, nrows = 1)%>%layout(legend=list(title=list(text='')))
 
