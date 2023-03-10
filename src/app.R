@@ -83,7 +83,7 @@ generate_page_content <- function(page_title, year) {
         b <- wordcloud(words=df1$Artist,freq=df1$popularity,min.freq=80,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(1.5, .15))
         df4 <- read.csv("./data/processed/genres.csv")
         
-        plot1<-ggplot(data = df2, aes(x = count, y = popularity)) + 
+        plot1<-ggplot(data = df2, aes(x = count, y = popularity,colour=size,size=size)) + 
                     geom_point() + 
                     labs(title="Artist's Song Quality vs Popularity",
                          x="Number of times on top", 
