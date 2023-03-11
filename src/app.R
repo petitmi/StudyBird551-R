@@ -275,8 +275,11 @@ generate_page_content <- function(page_title, year) {
         hits_c_bin_st <- hits_c_bin %>%  gather(features, value, -c(rank_bin,popularity)) # another way to stack
         
         plot1 <- hits_c_bin_st %>%
-          ggplot(aes(x=rank_bin,y=value)) + geom_point(aes(color = features,shape=features,alpha=popularity),size=10) +
-          scale_colour_manual(values=c("1", "2", "3", "4"))
+          ggplot(aes(x=rank_bin,y=value)) + 
+          geom_point(aes(color = features,shape=features,alpha=popularity),size=10) +
+          scale_colour_manual(values=c("1", "2", "3", "4"))+
+          labs(title=titleParams[[1]][1], subtitle = titleParams[[1]][2])+
+          theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
         
         #plot2
         require(gridExtra)
@@ -293,12 +296,16 @@ generate_page_content <- function(page_title, year) {
         plot2_3 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=duration_ms,group = Year))+
           geom_boxplot()
         
-        plot2 <- grid.arrange(chart1_1, chart1_2, chart1_3, ncol=3)
+        plot2 <- grid.arrange(chart1_1, chart1_2, chart1_3, ncol=3)+
+          labs(title=titleParams[[2]][1], subtitle = titleParams[[2]][2])+
+          theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
 
         # plot3
         plot3<-ggplot(hits) + 
           geom_bar(aes(x=key,fill = mode),stat = "count") + 
-          labs(x='Musical Key',y='Occurrence')
+          labs(x='Musical Key',y='Occurrence')+
+          labs(title=titleParams[[3]][1], subtitle = titleParams[[3]][2])+
+          theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
         
         chart_describ=dccMarkdown("
          - The **energy** represents the intensity and activity; 
