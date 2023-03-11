@@ -60,7 +60,7 @@ app %>% add_callback(
               input("year-slider", "value")),
   function(pathname,year) {
     if (pathname=='/artist') {
-      return(generic.skeletonate_page_content("Artist Analysis", year))
+      return(generate_page_content("Artist Analysis", year))
     } else if (pathname=='/lyrics') {
       return(generate_page_content("Lyrics Analysis", year))
     } else if (pathname=='/tracks') {
@@ -73,18 +73,17 @@ generate_page_content <- function(page_title, year) {
   start_year <- year[1]
   end_year <- year[2]
   if (page_title=="Artist Analysis"){
-    df <- read.csv('./data/processed/artist_process_data.csv')
+    df <- read.csv('../data/processed/artist_process_data.csv')
     df <- filter(df,Year<=end_year&Year>=start_year)
     df1 <- df[!duplicated(df[,4]),]
     df1$year <- format(df1$first_year, format="%Y")
     df2 <- filter(df1,popularity>60)
     df3 <- df[!duplicated(df[,11]),]
-    df4 <- read.csv("./data/processed/genres.csv")
+    df4 <- read.csv("../data/processed/genres.csv")
     df4 <- filter(df4,Artist.number>10)
     df5 <- data.frame(df1$Artist,df1$count)
-    a <- wordcloud2(df5, size = 1, color = "random-dark")
     df6 <- data.frame(df1$Artist,df1$popularity)
-    b <- wordcloud2(df6, size = 0.3, color = "random-dark")
+   
     
     plot1<-ggplot(data = df2, aes(x = count, 
                                   y = popularity,
@@ -109,7 +108,6 @@ generate_page_content <- function(page_title, year) {
                                fill=year_range)) +
       geom_bar(width=1, 
                stat='identity')+
-      coord_polar(theta = "y")+
       labs(title="Debut year percentage")+
       theme(plot.title = element_text(hjust = 0.5))
     
@@ -123,7 +121,9 @@ generate_page_content <- function(page_title, year) {
            x="Artist number",
            y="genres")+
       theme(plot.title = element_text(hjust = 0.5))
-    
+      
+    a <- wordcloud2(df5, size = 1, color = "random-dark")
+    b <- wordcloud2(df6, size = 0.3, color = "random-dark")
     saveWidget(a, "tmp1.html", selfcontained = F)
     webshot("tmp1.html", "wordcloud1.png", delay = 3, vwidth = 900, vheight = 200)
     img1 <- readBin("wordcloud1.png", "raw", file.info("wordcloud1.png")$size)
