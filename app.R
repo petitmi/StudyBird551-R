@@ -73,13 +73,13 @@ generate_page_content <- function(page_title, year) {
   start_year <- year[1]
   end_year <- year[2]
   if (page_title=="Artist Analysis"){
-    df <- read.csv('data/processed/artist_process_data.csv')
+    df <- read.csv('./data/processed/artist_process_data.csv')
     df <- filter(df,Year<=end_year&Year>=start_year)
     df1 <- df[!duplicated(df[,4]),]
     df1$year <- format(df1$first_year, format="%Y")
     df2 <- filter(df1,popularity>60)
     df3 <- df[!duplicated(df[,11]),]
-    df4 <- read.csv("data/processed/genres.csv")
+    df4 <- read.csv("./data/processed/genres.csv")
     df4 <- filter(df4,Artist.number>10)
     df5 <- data.frame(df1$Artist,df1$count)
     df6 <- data.frame(df1$Artist,df1$popularity)
@@ -158,7 +158,7 @@ generate_page_content <- function(page_title, year) {
   } else if (page_title=="Lyrics Analysis"){
     
     options(dplyr.summarise.inform = FALSE)
-    df <- read_excel('data/processed/lyrics_dataset.xlsx')
+    df <- read_excel('./data/processed/lyrics_dataset.xlsx')
     df <- df %>% filter(Year >= start_year & Year <= end_year)
     cutRank4<-cut(df$Rank, breaks = 4,labels=c('1-25','26-50','51-75','76-100'))
     df$rank_bin <-cutRank4
@@ -258,7 +258,7 @@ generate_page_content <- function(page_title, year) {
     
   } else if (page_title=="Tracks Analysis"){
     # load data
-    hits <- read.csv('data/processed/audio_data_processed.csv')
+    hits <- read.csv('./data/processed/audio_data_processed.csv')
     hits <- hits[,!(names(hits) %in% c("Unnamed..0",'type','uri','track_href','analysis_url','id'))]
     
     hits$rank_bin <-cut(hits$Rank, breaks = 10,labels=c('1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'))
