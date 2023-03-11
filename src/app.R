@@ -282,8 +282,6 @@ generate_page_content <- function(page_title, year) {
       theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
     
     #plot2
-    require(gridExtra)
-    
     hits_c1 <- hits %>% group_by(Year,time_signature) %>% count() %>% rename(cnt=n) 
     hits_c1$ts_perct <- hits_c1$cnt/100
     
@@ -295,7 +293,8 @@ generate_page_content <- function(page_title, year) {
       geom_boxplot()
     plot2_3 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=duration_ms,group = Year))+
       geom_boxplot()
-    plot2 <- grid.arrange(plot2_1, plot2_2, plot2_3, ncol=3)
+    # plot2 <- grid.arrange(plot2_1, plot2_2, plot2_3, ncol=3)
+    plot2 <- subplot(plot2_1, plot2_2, plot2_3, nrows=1) %>% layout(title=titleParams[[1]][1])
     
     # plot3
     plot3<-ggplot(hits) + 
