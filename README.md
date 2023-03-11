@@ -1,7 +1,7 @@
 # StudyBird551 
 An analysis visualization dashboard for Billboard top100 hot🔥🔥songs🔥🔥analysis over year.
 
-**Website:** https://study-bird-dash-app.herokuapp.com  
+**Website:** TBD 
 
 Our dashboard provides the main features of hit songs with respect to tracks, lyrics and artist through years. For those songs, several characteristics are the main focus.
    - Artists: (1) Popularity; (2) seniority; (3) dedication/activity; (4) genres.
@@ -24,16 +24,16 @@ Click on the link below have a look directly.
 cd src
 ```
 ```python
-python app.py
+Rescript app.py
 ```
 
 ## Contributing
 
-[Contributing](https://github.com/petitmi/Study-Bird-551/blob/main/CONTRIBUTING.md)
+[Contributing](https://github.com/petitmi/StudyBird551-R/blob/main/CONTRIBUTING.md)
 
 ## License
 
-[License](https://github.com/petitmi/Study-Bird-551/blob/main/LICENSE.md)
+[License](https://github.com/petitmi/StudyBird551-R/blob/main/LICENSE.md)
 
 ## Contact
 If you are interested or have questions, please feel free to contact [Nyx](mailto:petitmi001@gmail.com). 
