@@ -79,10 +79,12 @@ generate_page_content <- function(page_title, year) {
     df1$year <- format(df1$first_year, format="%Y")
     df2 <- filter(df1,popularity>60)
     df3 <- df[!duplicated(df[,11]),]
-    a <- wordcloud(words=df1$Artist,freq=df1$count,min.freq=3,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(2, .25))
-    b <- wordcloud(words=df1$Artist,freq=df1$popularity,min.freq=80,max.words=200,colors=brewer.pal(8, "Dark2"),scale=c(1.5, .15))
     df4 <- read.csv("./data/processed/genres.csv")
     df4 <- filter(df4,Artist.number>10)
+    df5 <- data.frame(df1$Artist,df1$count)
+    a <- wordcloud2(df5, size = 1, color = "random-dark")
+    df6 <- data.frame(df1$Artist,df1$popularity)
+    b <- wordcloud2(df6, size = 0.3, color = "random-dark")
     
     plot1<-ggplot(data = df2, aes(x = count, 
                                   y = popularity,
@@ -121,8 +123,6 @@ generate_page_content <- function(page_title, year) {
            x="Artist number",
            y="genres")+
       theme(plot.title = element_text(hjust = 0.5))
-    
-    gglpotly(plot1)
     
     saveWidget(a, "tmp1.html", selfcontained = F)
     webshot("tmp1.html", "wordcloud1.png", delay = 3, vwidth = 900, vheight = 200)
