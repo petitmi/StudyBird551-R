@@ -12,3 +12,13 @@ options(repos=r)
 install.packages(c('readr', 'here', 'ggthemes', 'remotes','dashCoreComponents','dashHtmlComponents','dplyr','forcats','ggplot2','plotly','readxl','tidyr','tidyverse','wordcloud2','webshot','htmlwidgets','base64enc'))
 remotes::install_github("plotly/dashR", upgrade = "always")
 remotes::install_github('facultyai/dash-bootstrap-components@r-release')
+
+my_packages = c("tidyr", "plotly")
+
+install_if_missing = function(p) {
+  if (p %in% rownames(installed.packages()) == FALSE) {
+    install.packages(p)
+  }
+} 
+
+invisible(sapply(my_packages, install_if_missing))
