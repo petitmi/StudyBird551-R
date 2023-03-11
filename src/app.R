@@ -290,10 +290,10 @@ generate_page_content <- function(page_title, year) {
     
     hits_c2_1 <-hits_c1[hits_c1['time_signature']==4,]
     plot2_1<-plot_ly(x=factor(hits_c2_1$Year),y=hits_c2_1$ts_perct,type = 'scatter', mode = 'lines+markers',
-                     marker = list(line = list(width = 3)))
+                     marker = list(line = list(width = 3)),name='time_signature')
     hits_c2_2 <-hits[,c('Year','duration_ms','tempo')]
-    plot2_2 <- plot_ly(hits_c2_2,x=~factor(Year),y=~tempo,type="box")
-    plot2_3 <- plot_ly(hits_c2_2,x=~factor(Year),y=~duration_ms,type="box")
+    plot2_2 <- plot_ly(hits_c2_2,x=~factor(Year),y=~tempo,type="box",name='tempo')
+    plot2_3 <- plot_ly(hits_c2_2,x=~factor(Year),y=~duration_ms,type="box",name='duration_ms')
     plot2 <- subplot(plot2_1, plot2_2, plot2_3, nrows=1) %>% layout(title=titleParams[[1]][1])
   
     # plot2_1 <- ggplot(hits_c1[hits_c1['time_signature']==4,],aes(x=factor(Year),y=ts_perct,group = 1))+
@@ -309,7 +309,8 @@ generate_page_content <- function(page_title, year) {
     # plot3
     plot3<-ggplot(hits) + 
       geom_bar(aes(x=key,fill = factor(mode)),stat = "count") + 
-      labs(x='Musical Key',y='Occurrence',title=titleParams[[3]][1], subtitle = titleParams[[3]][2])
+    labs(x='Musical Key',y='Occurrence',title=titleParams[[3]][1], subtitle = titleParams[[3]][2]) +
+    scale_fill_discrete(name = "mode")
     # +theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
     plot3 <- ggplotly(plot3)
   
