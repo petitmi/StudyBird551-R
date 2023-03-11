@@ -274,33 +274,44 @@ generate_page_content <- function(page_title, year) {
       select(c('rank_bin','popularity','energy','speechiness','instrumentalness','valence'))
     hits_c_bin_st <- hits_c_bin %>%  gather(features, value, -c(rank_bin,popularity)) # another way to stack
     
+    
     plot1 <- hits_c_bin_st %>%
-      ggplot(aes(x=rank_bin,y=value)) + 
-      geom_point(aes(color = features,shape=features,alpha=popularity),size=10) +
+      ggplot(aes(x=rank_bin,y=value)) + geom_point(aes(color = features,shape=features,alpha=popularity),size=7) +
       scale_colour_manual(values=c("1", "2", "3", "4"))+
-      labs(title=titleParams[[1]][1], subtitle = titleParams[[1]][2])+
-      theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
+      labs(title=titleParams[[1]][1], subtitle = titleParams[[1]][2])
+    # + theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
+    
+    plot1 <- ggplotly(plot1)
     
     #plot2
     hits_c1 <- hits %>% group_by(Year,time_signature) %>% count() %>% rename(cnt=n) 
     hits_c1$ts_perct <- hits_c1$cnt/100
     
-    plot2_1 <- ggplot(hits_c1[hits_c1['time_signature']==4,],aes(x=Year,y=ts_perct,group = 1))+
-      geom_line()+
-      geom_point()+
-      labs(x='Year',y='4/4 Time signature percentage')
-    plot2_2 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=tempo,group = Year))+
-      geom_boxplot()
-    plot2_3 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=duration_ms,group = Year))+
-      geom_boxplot()
-    # plot2 <- grid.arrange(plot2_1, plot2_2, plot2_3, ncol=3)
+    
+    hits_c2_1 <-hits_c1[hits_c1['time_signature']==4,]
+    plot2_1<-plot_ly(x=factor(hits_c2_1$Year),y=hits_c2_1$ts_perct,type = 'scatter', mode = 'lines+markers',
+                     marker = list(line = list(width = 3)))
+    hits_c2_2 <-hits[,c('Year','duration_ms','tempo')]
+    plot2_2 <- plot_ly(hits_c2_2,x=~factor(Year),y=~tempo,type="box")
+    plot2_3 <- plot_ly(hits_c2_2,x=~factor(Year),y=~duration_ms,type="box")
     plot2 <- subplot(plot2_1, plot2_2, plot2_3, nrows=1) %>% layout(title=titleParams[[1]][1])
+  
+    # plot2_1 <- ggplot(hits_c1[hits_c1['time_signature']==4,],aes(x=factor(Year),y=ts_perct,group = 1))+
+    #     geom_line()+
+    #     geom_point()+
+    #     labs(x='Year',y='4/4 Time signature percentage')
+    # plot2_2 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=factor(Year),y=tempo,group = Year))+
+    # geom_boxplot()
+    # plot2_3 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=factor(Year),y=duration_ms,group = Year))+
+    #     geom_boxplot()
+    # plot2 <- grid.arrange(plot2_1, plot2_2, plot2_3, ncol=3)
     
     # plot3
     plot3<-ggplot(hits) + 
       geom_bar(aes(x=key,fill = factor(mode)),stat = "count") + 
-      labs(x='Musical Key',y='Occurrence',title=titleParams[[3]][1], subtitle = titleParams[[3]][2])+
-      theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
+      labs(x='Musical Key',y='Occurrence',title=titleParams[[3]][1], subtitle = titleParams[[3]][2])
+    # +theme(plot.title = element_text(size=30),plot.subtitle=element_text(size=15))
+    plot3 <- ggplotly(plot3)
   
     
     chart_describ=dccMarkdown("
