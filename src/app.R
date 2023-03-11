@@ -60,7 +60,7 @@ app %>% add_callback(
     input("year-slider", "value")),
     function(pathname,year) {
         if (pathname=='/artist') {
-            return(generate_page_content("Artist Analysis", year))
+            return(generic.skeletonate_page_content("Artist Analysis", year))
         } else if (pathname=='/lyrics') {
             return(generate_page_content("Lyrics Analysis", year))
         } else if (pathname=='/tracks') {
@@ -257,23 +257,66 @@ generate_page_content <- function(page_title, year) {
             "- Sentiment score ranges from -1 to 1. (-1 is the most negative, 1 is the most positive, and 0 is neutral).",md_code))
         
     } else if (page_title=="Tracks Analysis"){
+      # load data
+        hits <- read.csv('../data/processed/audio_data_processed.csv')
+        hits <- hits[,!(names(hits) %in% c("Unnamed..0",'type','uri','track_href','analysis_url','id'))]
         
-        df <- data.frame(x = rnorm(100), y = rnorm(100))
-        plot1<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
-        plot2<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
-        plot3<-ggplot(data = df, aes(x = x, y = y)) + geom_point()
+        hits$rank_bin <-cut(hits$Rank, breaks = 10,labels=c('1-10','11-20','21-30','31-40','41-50','51-60','61-70','71-80','81-90','91-100'))
+        titleParams <- list(c( "Vibe Features Over Rank",  "Energy, speechiness, instrumentalness,valence in different strata of the charts"),
+                            c( "Rhythm Features Over Year",  "Time signature, tempo, duration occurences"),
+                            c( "Musical Features Interaction",  "Musical key, mode occurences"))
+        # start_year <- 2012; end_year<-2022
+        hits_c <- hits[(start_year <= hits$Year) & (hits$Year <= end_year),]
+        
+        #plot1
+        hits_c_bin <- hits_c %>% group_by(rank_bin) %>%   
+          summarise(popularity=mean(popularity),energy=mean(energy),speechiness=mean(speechiness),instrumentalness=mean(instrumentalness),valence=mean(valence)) %>% 
+          select(c('rank_bin','popularity','energy','speechiness','instrumentalness','valence'))
+        hits_c_bin_st <- hits_c_bin %>%  gather(features, value, -c(rank_bin,popularity)) # another way to stack
+        
+        plot1 <- hits_c_bin_st %>%
+          ggplot(aes(x=rank_bin,y=value)) + geom_point(aes(color = features,shape=features,alpha=popularity),size=10) +
+          scale_colour_manual(values=c("1", "2", "3", "4"))
+        
+        #plot2
+        require(gridExtra)
+        
+        hits_c1 <- hits %>% group_by(Year,time_signature) %>% count() %>% rename(cnt=n) 
+        hits_c1$ts_perct <- hits_c1$cnt/100
+        
+        plot2_1 <- ggplot(hits_c1[hits_c1['time_signature']==4,],aes(x=Year,y=ts_perct,group = 1))+
+          geom_line()+
+          geom_point()+
+          labs(x='Year',y='4/4 Time signature percentage')
+        plot2_2 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=tempo,group = Year))+
+          geom_boxplot()
+        plot2_3 <- ggplot(hits[,c('Year','duration_ms','tempo')],aes(x=Year,y=duration_ms,group = Year))+
+          geom_boxplot()
+        
+        plot2 <- grid.arrange(chart1_1, chart1_2, chart1_3, ncol=3)
+
+        # plot3
+        plot3<-ggplot(hits) + 
+          geom_bar(aes(x=key,fill = mode),stat = "count") + 
+          labs(x='Musical Key',y='Occurrence')
         
         chart_describ=dccMarkdown("
-        
+         - The **energy** represents the intensity and activity; 
+         - The **speechness** detects the degree of presence spoken words; 
+         - The **instrumentalness** predicts whether a track contains no vocals; 
+         - The **valence** describing the musical positiveness.
         ")
     
         chart1_describ=dccMarkdown("
-       
+        - The **time signiture** (aka. meter) is a notational convention to specify how many beats are in each bar (or measure). The time signature ranges from 3 to 7 indicating time signatures of \"3/4\", to \"7/4\"; 
+        - The **tempo** (aka. beats per minute, BPM), which is the speed or pace of a given piece and derives directly from the average beat duration; 
+        - The **duration** is the duration of the track in milliseconds.
         ")
         
         chart2_describ=dccMarkdown("
-          
-            ")
+        - The **musical** key represents the scale, where values are integers that can map to pitches using standard Pitch Class notation. E.g. 0 = C, 1 = C♯/D♭, 2 = D, and so on; 
+        - The **mode** indicates the modality (major or minor), which is the type of scale from which its melodic content is derived. Major is represented by 1 and minor is 0.
+        ")
     }
     
     
